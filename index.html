@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <title>To Do list</title>
+        <style>
+
+    </style>
+  </head>
+  <body>
+    <div id="app" />
+    <script type="text/babel">
+
+      class Counter extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            tasks:[],
+            input: "",
+            count:0,
+            restore:[]
+          };
+        }
+
+        render() {
+          return (
+            <div class="center">
+
+            
+              <h1>To Do list</h1>
+              
+              <ul>
+                  {this.state.tasks.map((task, i) =>
+                  <li class="li" key={i}>
+                      {task} &nbsp;
+                      <button class="button" onClick={(event)=>{this.deleteTask(event,i)}}>Clear</button> &nbsp;
+                      <button class="button" onClick={(event)=>{this.edit(event,i)}}> Edit </button>
+
+                  </li>
+                  
+                  )} <br/>
+              </ul>
+              <h3>Remaining tasks:{this.state.count}</h3>
+              <input class="box" onKeyPress={this.inputKeyPress} onChange={this.handleChange} value={this.state.input} />
+              <button class="button" onClick={this.addtask}>Add task</button>
+              <button class="button" onClick={this.Update}>Update</button>
+              <button class="button" onClick={this.getdata} > Load Data</button> 
+
+              <h1>Deleted Tasks</h1>
+              
+              <ul>
+                  {this.state.restore.map((task, i) =>
+                  <li class="li" key={i}>
+                      {task} &nbsp;
+                      <button class="button" onClick={(event)=>{this.Restore(event,i)}}>Restore</button> &nbsp;
+                      <button class="button" onClick={(event)=>{this.DP(event,i)}}>Delete Permanently</button>
+
+                  </li>
+                  
+                  )} <br/>
+              </ul>
+
+              
+
+            </div>
+            
+            
+          );
+        }
+
+      getdata = () => {
+			fetch('https://raw.githubusercontent.com/SamSwaroop/ToDo/main/sample.json') 
+			.then(resp => resp.json())
+			.then(data => {
+				console.log(data);
+				this.setState({tasks:data});
+				this.cached['tasks'] = {test:"testing"}; 
+			});
+		}
+
+        Update = (event, i) => {
+          var n=[...this.state.tasks]
+          n[this.state.index]=this.state.input
+          this.setState({
+            tasks:n,
+            input:""
+          })
+
+        }
+        edit=(event,i)=>{
+        this.setState({
+          input:this.state.tasks[i],
+          index:i
+        })
+
+      }
+
+
+        inputKeyPress = (event) => {
+          if (event.key === "Enter") {
+            this.setState(state => ({
+            tasks: [...state.tasks, state.input],
+            input:"",
+            count: this.state.count + 1
+          }))        
+                        }
+                        }
+        handleChange = (event) => {
+                    this.setState({
+            input: event.target.value
+            });
+        }
+
+      deleteTask=(event,i)=>{
+        var n=[...this.state.tasks]
+        this.state.restore=[...this.state.restore,n.splice(i,1)]
+        
+        this.setState(state=>({
+          tasks:n,
+          
+          
+          
+        }));
+        console.log(this.state.restore)
+
+      }
+
+        addtask = () => {
+          this.setState(state => ({
+            tasks: [...state.tasks, state.input],
+            input:"",
+            count: this.state.count + 1
+          }))
+        }
+
+        DP =(event,i)=>{
+        var s=[...this.state.restore]
+        s.splice(i,1)
+        this.setState({
+          restore:s
+        })
+      }
+
+
+      Restore=(event,i)=>{
+        var r=[...this.state.restore]
+        this.state.tasks=[...this.state.tasks,r.splice(i,1)]
+        this.state.restore.splice(i,1)
+        this.setState({
+          tasks:this.state.tasks
+        })
+
+      }
+      }
+
+        
+
+      class App extends React.Component {
+
+        render() {
+          return (
+            <div>
+              <Counter />
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<App />, document.querySelector("#app"));
+
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
